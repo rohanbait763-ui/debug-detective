@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ case.title }} - Debug Detective</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0f0f0f;
+            color: #eeeeee;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 0 60px;
+        }
+
+        /* =========================
+           HEADER
+        ========================== */
+
+        .header {
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff3b3b;
+            margin-bottom: 15px;
+        }
+
+        .case-title {
+            font-size: 30px;
+            margin: 0 0 12px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            background: #333333;
+            color: #ffffff;
+            padding: 7px 14px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        /* =========================
+           GENERAL SECTIONS
+        ========================== */
+
+        .section {
+            background: #1c1c1c;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #292929;
+        }
+
+        .section-title {
+            font-size: 21px;
+            margin: 0 0 18px;
+        }
+
+        .section-description {
+            color: #bbbbbb;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           CASE FILE
+        ========================== */
+
+        .case-file {
+            border-left: 4px solid #ff3b3b;
+        }
+
+        /* =========================
+           CODE DISPLAY
+        ========================== */
+
+        .code-container {
+            background: #050505;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid #292929;
+        }
+
+        .code-container pre {
+            margin: 0;
+            color: #00ff88;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* =========================
+           DETECTIVE CHALLENGE
+        ========================== */
+
+        .challenge {
+            border-left: 4px solid #ffcc00;
+        }
+
+        .question {
+            font-size: 17px;
+            margin-bottom: 15px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 13px;
+            background: #111111;
+            color: #ffffff;
+            border: 1px solid #444444;
+            border-radius: 7px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .answer-input:focus {
+            border-color: #ff3b3b;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 12px 18px;
+            font-size: 15px;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .primary-button {
+            background: #ff3b3b;
+        }
+
+        .primary-button:hover {
+            background: #d92e2e;
+        }
+
+        .hint-button {
+            background: #444444;
+        }
+
+        .hint-button:hover {
+            background: #555555;
+        }
+
+        .run-button {
+            background: #00a86b;
+        }
+
+        .run-button:hover {
+            background: #008f5b;
+        }
+
+        /* =========================
+           RESULT
+        ========================== */
+
+        .result {
+            display: none;
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 7px;
+            background: #111111;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           HINT
+        ========================== */
+
+        .hint {
+            display: none;
+            margin-top: 18px;
+            padding: 15px;
+            background: #292500;
+            border-left: 4px solid #ffcc00;
+            border-radius: 6px;
+        }
+
+        /* =========================
+           FIX SECTION
+        ========================== */
+
+        #fixSection {
+            display: none;
+            border-left: 4px solid #00a86b;
+        }
+
+        .editor {
+            width: 100%;
+            height: 330px;
+            resize: vertical;
+
+            background: #050505;
+            color: #00ff88;
+
+            border: 1px solid #444444;
+            border-radius: 8px;
+
+            padding: 18px;
+
+            font-family: Consolas, Monaco, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+
+            outline: none;
+        }
+
+        .editor:focus {
+            border-color: #00a86b;
+        }
+
+        /* =========================
+           RUN RESULT
+        ========================== */
+
+        #runResult {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #111111;
+        }
+
+        #runResult pre {
+            margin-top: 15px;
+            color: #00ff88;
+            font-family: Consolas, Monaco, monospace;
+            white-space: pre-wrap;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                padding-top: 25px;
+            }
+
+            .logo {
+                font-size: 26px;
+            }
+
+            .case-title {
+                font-size: 24px;
+            }
+
+            .section {
+                padding: 18px;
+            }
+
+            .code-container pre {
+                font-size: 13px;
+            }
+
+            .editor {
+                font-size: 13px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="header">
+
+        <div class="logo">
+            🕵️ Debug Detective
+        </div>
+
+        <h1 class="case-title">
+            {{ case.title }}
+        </h1>
+
+        <div class="difficulty">
+            Difficulty: {{ case.difficulty }}
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         CASE FILE
+    ========================== -->
+
+    <div class="section case-file">
+
+        <h2 class="section-title">
+            📖 Case File
+        </h2>
+
+        <p class="section-description">
+            {{ case.story }}
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         BUGGY CODE
+    ========================== -->
+
+    <div class="section">
+
+        <h2 class="section-title">
+            💻 Suspect Code
+        </h2>
+
+        <div class="code-container">
+
+            <pre>{{ case.code }}</pre>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         STEP 1
+    ========================== -->
+
+    <div class="section challenge">
+
+        <h2 class="section-title">
+            🔍 Step 1 — Find the Bug
+        </h2>
+
+        <p class="question">
+            Which line contains the bug?
+        </p>
+
+        <input
+            type="text"
+            id="answer"
+            class="answer-input"
+            placeholder="Enter the suspicious line..."
+        >
+
+        <div class="buttons">
+
+            <button
+                class="primary-button"
+                onclick="checkAnswer()">
+                🔎 Submit Diagnosis
+            </button>
+
+            <button
+                class="hint-button"
+                onclick="showHint()">
+                💡 Get Hint
+            </button>
+
+        </div>
+
+
+        <!-- Hint -->
+
+        <div id="hint" class="hint">
+
+            <strong>💡 Detective Hint</strong>
+
+            <p>
+                {{ case.clues[0] }}
+            </p>
+
+        </div>
+
+
+        <!-- Diagnosis result -->
+
+        <div id="result" class="result"></div>
+
+    </div>
+
+
+    <!-- =========================
+         STEP 2
+         HIDDEN INITIALLY
+    ========================== -->
+
+    <div
+        class="section"
+        id="fixSection">
+
+        <h2 class="section-title">
+            🔧 Step 2 — Fix the Bug
+        </h2>
+
+        <p class="section-description">
+            Edit the code below and fix the problem you discovered.
+            When you think your solution is correct, run the code.
+        </p>
+
+
+        <!-- Code editor -->
+
+        <textarea
+            id="codeEditor"
+            class="editor"
+        >{{ case.code }}</textarea>
+
+
+        <!-- Run button -->
+
+        <div class="buttons">
+
+            <button
+                class="run-button"
+                onclick="runCode()">
+                ▶ Run Code
+            </button>
+
+        </div>
+
+
+        <!-- Execution result -->
+
+        <div id="runResult">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script>
+
+    /* =========================
+       SHOW HINT
+    ========================== */
+
+    function showHint() {
+
+        const hint = document.getElementById("hint");
+
+        hint.style.display = "block";
+
+    }
+
+
+    /* =========================
+       CHECK BUG ANSWER
+    ========================== */
+
+    function checkAnswer() {
+
+        const answer =
+            document.getElementById("answer").value.trim();
+
+        const result =
+            document.getElementById("result");
+
+        const fixSection =
+            document.getElementById("fixSection");
+
+
+        /* Empty answer */
+
+        if (answer === "") {
+
+            result.style.display = "block";
+
+            result.style.borderLeft =
+                "4px solid #ffcc00";
+
+            result.innerHTML =
+                "⚠️ Please enter the line you think contains the bug.";
+
+            return;
+        }
+
+
+        /* Correct answer */
+
+        if (
+            answer.includes(
+                "range(len(products) - 1)"
+            )
+        ) {
+
+            result.style.display = "block";
+
+            result.style.borderLeft =
+                "4px solid #00a86b";
+
+            result.innerHTML =
+                "✅ Correct! You found the suspicious line.<br><br>" +
+                "🔓 <strong>Step 2 has been unlocked.</strong>";
+
+
+            /* Unlock Step 2 */
+
+            fixSection.style.display = "block";
+
+
+            /* Scroll to Step 2 */
+
+            setTimeout(function () {
+
+                fixSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }, 300);
+
+        }
+
+
+        /* Incorrect answer */
+
+        else {
+
+            result.style.display = "block";
+
+            result.style.borderLeft =
+                "4px solid #ff3b3b";
+
+            result.innerHTML =
+                "❌ Not quite. Look carefully at how the loop decides when to stop.";
+
+        }
+
+    }
+
+
+    /* =========================
+       RUN CODE
+    ========================== */
+
+    async function runCode() {
+
+        const code =
+            document.getElementById("codeEditor").value;
+
+        const resultBox =
+            document.getElementById("runResult");
+
+
+        /* Show running message */
+
+        resultBox.style.display = "block";
+
+        resultBox.style.borderLeft =
+            "4px solid #ffcc00";
+
+        resultBox.innerHTML =
+            "⏳ Running your code...";
+
+
+        try {
+
+            const response =
+                await fetch("/run", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body: new URLSearchParams({
+                        code: code
+                    })
+
+                });
+
+
+            const result =
+                await response.json();
+
+
+            /* Correct code */
+
+            if (result.success) {
+
+                resultBox.style.borderLeft =
+                    "4px solid #00a86b";
+
+                resultBox.innerHTML =
+
+                    "<strong>🎉 " +
+                    result.message +
+                    "</strong>" +
+
+                    "<br><br>" +
+
+                    "<strong>Program Output:</strong>" +
+
+                    "<pre>" +
+                    result.output +
+                    "</pre>";
+
+            }
+
+
+            /* Incorrect code */
+
+            else {
+
+                resultBox.style.borderLeft =
+                    "4px solid #ff3b3b";
+
+                resultBox.innerHTML =
+
+                    "<strong>❌ " +
+                    (
+                        result.message ||
+                        "The code is not correct yet."
+                    ) +
+                    "</strong>" +
+
+                    "<br><br>" +
+
+                    "<strong>Program Output:</strong>" +
+
+                    "<pre>" +
+                    (
+                        result.output ||
+                        "No output"
+                    ) +
+                    "</pre>";
+
+            }
+
+        }
+
+
+        /* Connection / server error */
+
+        catch (error) {
+
+            resultBox.style.borderLeft =
+                "4px solid #ff3b3b";
+
+            resultBox.innerHTML =
+
+                "<strong>❌ Unable to run the code.</strong>" +
+
+                "<br><br>" +
+
+                "Make sure the Flask server is running.";
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>

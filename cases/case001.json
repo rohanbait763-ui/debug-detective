@@ -1,0 +1,16 @@
+{
+  "id": "case001",
+  "title": "The Missing Product",
+  "difficulty": "Easy",
+  "story": "The shop's inventory system processed today's products, but the owner noticed that the last product was never recorded. The system runs without crashing, so the developer didn't notice the problem immediately.",
+  "code": "products = [\"Rice\", \"Milk\", \"Sugar\", \"Tea\", \"Oil\"]\ndef process_products(products):\n    for i in range(len(products) - 1):\n        print(\"Processing:\", products[i])\n\nprocess_products(products)",
+  "bug": "The loop stops one position too early, so the last product is never processed.",
+  "buggy_line": "for i in range(len(products) - 1):",
+  "expected_output": "Processing: Rice\nProcessing: Milk\nProcessing: Sugar\nProcessing: Tea\nProcessing: Oil",
+  "actual_output": "Processing: Rice\nProcessing: Milk\nProcessing: Sugar\nProcessing: Tea",
+  "clues": [
+    "The system successfully processes most of the products. Check how it decides when to stop.",
+    "Look closely at the number of times the loop is allowed to run.",
+    "len(products) tells you how many products exist. Why might subtracting 1 cause a problem?"
+  ]
+}
